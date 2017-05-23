@@ -1,4 +1,4 @@
-package com.yuraha18.simplephotoviewer;
+package com.yuraha18.simplephotoviewer.view;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,9 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.yuraha18.simplephotoviewer.DTO.Photo;
-import com.yuraha18.simplephotoviewer.UnsplashAPI.APIService;
-import com.yuraha18.simplephotoviewer.UnsplashAPI.URL;
+
+import com.yuraha18.simplephotoviewer.R;
+import com.yuraha18.simplephotoviewer.model.DTO.Photo;
+import com.yuraha18.simplephotoviewer.model.UnsplashAPI.APIService;
+import com.yuraha18.simplephotoviewer.model.UnsplashAPI.URL;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity
 
     private void testApi() {
         System.out.println("test api");
-        APIService api =  getApi();
+       APIService api =  getApi();
         Call<Photo> response =  api.getRandomPhoto();
         response.enqueue(new Callback<Photo>() {
             @Override
