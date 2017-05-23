@@ -13,6 +13,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.yuraha18.simplephotoviewer.DTO.Photo;
+import com.yuraha18.simplephotoviewer.UnsplashAPI.APIService;
+import com.yuraha18.simplephotoviewer.UnsplashAPI.URL;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -38,9 +48,37 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        testApi();
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
+    private void testApi() {
+        System.out.println("test api");
+        APIService api =  getApi();
+        Call<Photo> response =  api.getRandomPhoto();
+        response.enqueue(new Callback<Photo>() {
+            @Override
+            public void onResponse(Call<Photo> call, Response<Photo> response) {
+                System.out.println(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<Photo> call, Throwable t) {
+                System.out.println("failure");
+            }
+        });
+    }
+
+    private APIService getApi() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(URL.CONNECTION_URL) //Базовая часть адреса
+                .addConverterFactory(GsonConverterFactory.create()) //Конвертер, необходимый для преобразования JSON'а в объекты
+                .build();
+        return retrofit.create(APIService.class); //Создаем объект, при помощи которого будем выполнять запросы
+    }
+
 
     @Override
     public void onBackPressed() {
