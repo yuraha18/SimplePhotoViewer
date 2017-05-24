@@ -16,5 +16,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="Hello World!"
+        android:id="@+id/textView2" />
+
+    <ListView
+        android:id="@+id/photoList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
 </RelativeLayout>
