@@ -12,11 +12,19 @@ public class Photo {
     private final User user;
     private final PhotoLinks urls;
 
-    public Photo(String id, int likes, User user, PhotoLinks urls) {
+    @SerializedName("liked_by_user")
+    private final boolean likedByUser;
+
+    public Photo(String id, int likes, User user, PhotoLinks urls, boolean likedByUser) {
         this.id = id;
         this.likes = likes;
         this.user = user;
         this.urls = urls;
+        this.likedByUser = likedByUser;
+    }
+
+    public boolean isLikedByUser() {
+        return likedByUser;
     }
 
     @Override

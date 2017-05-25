@@ -34,9 +34,7 @@ public class ListViewAdapterForPhotos extends BaseAdapter {
     boolean isImageFitToScreen;
 
     ImageView photoView ;
-    TextView author;
-    TextView countOfLikes;
-    ImageButton likeButton;
+
     MainActivity mainActivity;
 
     public ListViewAdapterForPhotos(Context ctx, ArrayList<Photo> photoList, MainActivity mainActivity) {
@@ -66,10 +64,7 @@ public class ListViewAdapterForPhotos extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         convertView=inflater.inflate(R.layout.photo_item, null);
         photoView = (ImageView) convertView.findViewById(R.id.photo);
-         author = (TextView) convertView.findViewById(R.id.author);
-         countOfLikes = (TextView) convertView.findViewById(R.id.countOfLikes);
-         likeButton = (ImageButton) convertView.findViewById(R.id.likeButton);
-        setOnClickListenerForLikeButton();
+
         setOnClickListenerForPhotoView(position);
 
         fillInViews(position, convertView);
@@ -78,14 +73,18 @@ public class ListViewAdapterForPhotos extends BaseAdapter {
     }
 
     private void setOnClickListenerForPhotoView(int position) {
-        Photo photo = getPhotoList().get(position);
-        final String fullUrl = photo.getUrls().getFull();
+        final Photo photo = getPhotoList().get(position);
+        final String fullUrl = photo.getUrls().getSmall();
         photoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FullSizePhotoShower newFragment = new FullSizePhotoShower();
                 Bundle args = new Bundle();
                 args.putString("url", fullUrl);
+                args.putString("id", photo.getId());
+                args.putInt("likes", photo.getLikes());
+                args.putBoolean("is_liked_by_user", photo.isLikedByUser());
+                args.putString("author", photo.getUser().getUsername());
                 newFragment.setArguments(args);
 
                 newFragment.show(mainActivity.getSupportFragmentManager(), "bbb");
@@ -96,20 +95,12 @@ public class ListViewAdapterForPhotos extends BaseAdapter {
     private void fillInViews(int position, View convertView) {
         Photo photo = photoList.get(position);
         String photoUrl =  photo.getUrls().getSmall();
-        author.setText(photo.getUser().getUsername());
         DownloadImageTask.loadImage(ctx, photoUrl, photoView, convertView);
         //countOfLikes.setText(photo.getLikes());
 
     }
 
-    private void setOnClickListenerForLikeButton() {
-        likeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("clicked on like button");
-            }
-        });
-    }
+
 
 
     public void setNewData(ArrayList<Photo> list)
