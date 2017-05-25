@@ -7,13 +7,13 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Photo {
-    private final String id;
-    private final int likes;
-    private final User user;
-    private final PhotoLinks urls;
+    private  String id;
+    private  int likes;
+    private  User user;
+    private  PhotoLinks urls;
 
     @SerializedName("liked_by_user")
-    private final boolean likedByUser;
+    private boolean likedByUser;
 
     public Photo(String id, int likes, User user, PhotoLinks urls, boolean likedByUser) {
         this.id = id;
@@ -23,9 +23,6 @@ public class Photo {
         this.likedByUser = likedByUser;
     }
 
-    public boolean isLikedByUser() {
-        return likedByUser;
-    }
 
     @Override
     public String toString() {
@@ -41,16 +38,40 @@ public class Photo {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public int getLikes() {
         return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
     }
 
     public User getUser() {
         return user;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public PhotoLinks getUrls() {
         return urls;
+    }
+
+    public void setUrls(PhotoLinks urls) {
+        this.urls = urls;
+    }
+
+    public boolean isLikedByUser() {
+        return likedByUser;
+    }
+
+    public void setLikedByUser(boolean likedByUser) {
+        this.likedByUser = likedByUser;
     }
 }
 

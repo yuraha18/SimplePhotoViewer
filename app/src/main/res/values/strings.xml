@@ -8,4 +8,14 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="sortList">
+        <item>Новіші</item>
+        <item>Популярніші</item>
+        <item>Старіші</item>
+        <item>Випадкове фото</item>
+    </string-array>
+
+    <string name="cant_connect_to_internet">Немає інтернет зєднання. Без нього робота з додатком не можлива</string>
+    <string name="request_limit_exception">Перевищено ліміт зєднаь з UnsplashAPI для користувача. Зачекайте до кінця години </string>
 </resources>

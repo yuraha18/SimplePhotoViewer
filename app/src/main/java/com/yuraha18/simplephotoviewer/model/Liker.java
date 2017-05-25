@@ -7,6 +7,7 @@ import com.yuraha18.simplephotoviewer.model.DTO.Photo;
 import com.yuraha18.simplephotoviewer.model.UnsplashAPI.APIService;
 import com.yuraha18.simplephotoviewer.model.UnsplashAPI.ApiConstants;
 import com.yuraha18.simplephotoviewer.model.auth.Authorization;
+import com.yuraha18.simplephotoviewer.view.FullSizePhotoShower;
 
 import java.io.IOException;
 
@@ -29,44 +30,63 @@ public class Liker {
         this.activity = activity;
     }
 
-    public boolean sendLike(String photoId)
+    public boolean sendLike(String photoId, final FullSizePhotoShower fullSizePhotoShower)
     {
         String accessToken = Authorization.getAccessTokenWithAuth(activity);
         APIService api  = getApi(ApiConstants.CONNECTION_URL);
 
-        Call<Photo> call = api.likePhoto(photoId, accessToken);
-        try {
-            Photo photo = call.execute().body();
-            isResponseGet = true;
-            if (photo!=null)
-                result = true;
+        final Call<Photo> call = api.likePhoto(photoId, accessToken);
 
-            else
-                result = false;
-        }
-         catch (Exception e) {result = false;
-            e.printStackTrace();
-        }
+                call.enqueue(new Callback<Photo>() {
+                    @Override
+                    public void onResponse(Call<Photo> call, Response<Photo> response) {
+                        isResponseGet = true;
+                        if (response.body()!=null)
+                            result = true;
+
+                        else
+                            result = false;
+
+                        fullSizePhotoShower.updateViewsAfterLiking();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Photo> call, Throwable t) {
+                        result = false;
+                        fullSizePhotoShower.updateViewsAfterLiking();
+                    }
+                });
+
+
         return result;
     }
 
-    public boolean sendUnLike(String photoId)
+    public boolean sendUnLike(String photoId, final FullSizePhotoShower fullSizePhotoShower)
     {
         String accessToken = Authorization.getAccessTokenWithAuth(activity);
         APIService api  = getApi(ApiConstants.CONNECTION_URL);
-        Call<Photo> call = api.unlikePhoto(photoId, accessToken);
-        try {
-            Photo photo = call.execute().body();
-            isResponseGet = true;
-            if (photo!=null)
-                result = true;
+        final Call<Photo> call = api.unlikePhoto(photoId, accessToken);
 
-            else
+        call.enqueue(new Callback<Photo>() {
+            @Override
+            public void onResponse(Call<Photo> call, Response<Photo> response) {
+                isResponseGet = true;
+                if (response.body()!=null)
+                    result = true;
+
+                else
+                    result = false;
+
+                fullSizePhotoShower.updateViewsAfterLiking();
+            }
+
+            @Override
+            public void onFailure(Call<Photo> call, Throwable t) {
                 result = false;
-        }
-        catch (Exception e) {result = false;
-            e.printStackTrace();
-        }
+                fullSizePhotoShower.updateViewsAfterLiking();
+            }
+        });
+
 
 
         return result;

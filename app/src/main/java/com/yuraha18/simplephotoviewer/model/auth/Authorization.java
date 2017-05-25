@@ -111,11 +111,15 @@ public class Authorization {
         call.enqueue(new Callback<AccessToken>() {
             @Override
             public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
-                if (response!=null)
+                if (response.body()!=null)
                 {
                     String tokenValue = response.body().getAccessToken();
                     SharedPreferences mSettings = mainActivity.getSharedPreferences(ApiConstants.APP_PREFERENCES, Context.MODE_PRIVATE);
                     mSettings.edit().putString(ApiConstants.ACCESS_TOKEN, tokenValue).apply();
+                }
+                else
+                {
+                    //Toast.makeText()
                 }
             }
 

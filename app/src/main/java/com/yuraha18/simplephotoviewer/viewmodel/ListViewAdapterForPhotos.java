@@ -1,6 +1,8 @@
 package com.yuraha18.simplephotoviewer.viewmodel;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,22 +74,30 @@ public class ListViewAdapterForPhotos extends BaseAdapter {
         return convertView;
     }
 
-    private void setOnClickListenerForPhotoView(int position) {
+    private void setOnClickListenerForPhotoView(final int position) {
         final Photo photo = getPhotoList().get(position);
         final String fullUrl = photo.getUrls().getSmall();
         photoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FullSizePhotoShower newFragment = new FullSizePhotoShower();
+
+                FullSizePhotoShower newFragment = new FullSizePhotoShower(ListViewAdapterForPhotos.this, position);
                 Bundle args = new Bundle();
                 args.putString("url", fullUrl);
                 args.putString("id", photo.getId());
                 args.putInt("likes", photo.getLikes());
+                args.getInt("position_in_list", position);
                 args.putBoolean("is_liked_by_user", photo.isLikedByUser());
                 args.putString("author", photo.getUser().getUsername());
                 newFragment.setArguments(args);
-
+                Intent intent = new Intent();
+                intent.putExtras(args);
+                //  newFragment.setTargetFragment(getFragmentManager()., 1);
                 newFragment.show(mainActivity.getSupportFragmentManager(), "bbb");
+                //newFragment.startActivityForResult(intent, 1);
+
+
+               // newFragment.show(mainActivity.getSupportFragmentManager(), "bbb");
             }
         });
     }
@@ -116,4 +126,6 @@ public class ListViewAdapterForPhotos extends BaseAdapter {
     public void setPhotoList(ArrayList<Photo> photoList) {
         this.photoList = photoList;
     }
+
+
 }

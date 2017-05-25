@@ -13,23 +13,23 @@
     tools:context="com.yuraha18.simplephotoviewer.view.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/sortList" />
+
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:id="@+id/Access" />
+        android:layout_below="@id/spinner"
+        android:id="@+id/exceptionText" />
 
-    <Button
-        android:text="Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/Access"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="47dp"
-        android:layout_marginStart="47dp"
-        android:id="@+id/auth" />
+
     <GridView
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/spinner"
         android:id="@+id/photoList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

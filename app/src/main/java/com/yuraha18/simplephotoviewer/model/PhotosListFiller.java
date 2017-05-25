@@ -45,14 +45,21 @@ public class PhotosListFiller {
     MainActivity mainActivity;
     private  ListViewAdapterForPhotos adapter;
 
-    public PhotosListFiller(Context ctx, MainActivity mainActivity) {
+    public PhotosListFiller( MainActivity mainActivity) {
         this.mainActivity = mainActivity;
-        adapter = new ListViewAdapterForPhotos(ctx, new ArrayList<Photo>(), mainActivity);
+        adapter = new ListViewAdapterForPhotos(mainActivity, new ArrayList<Photo>(), mainActivity);
     }
 
-    public void fillInListView(final Context ctx) {
+    public void fillInListView(final String groupBy) {
         listView=(GridView)mainActivity.findViewById(R.id.photoList);
-        additems(ctx, mainActivity);
+
+        if (groupBy.equals(ApiConstants.RANDOM_PHOTO))
+        {
+          getRandomPhoto();
+            return;
+        }
+
+        additems(groupBy);
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -71,7 +78,7 @@ public class PhotosListFiller {
                     isLoading = false;
                     itemCount = totalItemCount;
                     page++;
-                    additems(ctx, mainActivity);
+                    additems(groupBy);
 
                 }
 
@@ -82,6 +89,30 @@ public class PhotosListFiller {
             }
         });
 
+    }
+
+    private void getRandomPhoto() {
+        final APIService api =  getApi();
+        Call<Photo> response =  api.getRandomPhoto( Authorization.getAccessToken(mainActivity));
+
+        response.enqueue(new Callback<Photo>() {
+            @Override
+            public void onResponse(Call<Photo> call, Response<Photo> response) {
+                if (response.body()!=null) {
+                    ArrayList<Photo> list = new ArrayList<Photo>();
+                      list.add(response.body());
+                  adapter.setPhotoList(list);
+                    listView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Photo> call, Throwable t) {
+                System.out.println("failure");
+            }
+        });
     }
 
     private int countOfImageOnSingleScreen (Context context)
@@ -98,13 +129,13 @@ public class PhotosListFiller {
         return countImagesHeigh * countImagesWidth;
     }
 
-    private void additems(final Context context, final MainActivity mainActivity) {
+    private void additems(String groupBy) {
         final APIService api =  getApi();
-
+final Context context = mainActivity.getApplicationContext();
         final int countImagesInScreen = countOfImageOnSingleScreen(context);
        final int countPhotosForLoad = (int) (countImagesInScreen +3);
 
-        Call<List<Photo>> response =  api.getListPhotos(page, countPhotosForLoad, ApiConstants.GROUP_BY_POPULAR, Authorization.getAccessToken(mainActivity));
+        Call<List<Photo>> response =  api.getListPhotos(page, countPhotosForLoad, groupBy, Authorization.getAccessToken(mainActivity));
 
         response.enqueue(new Callback<List<Photo>>() {
             @Override
@@ -130,25 +161,12 @@ public class PhotosListFiller {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("onitemclick");
                 Photo photo = (Photo) listView.getAdapter().getItem(position);
 
                 final Dialog nagDialog = new Dialog(ctx,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 nagDialog.setCancelable(false);
-               // nagDialog.setContentView(R.layout.preview_image);
-               /* Button btnClose = (Button)nagDialog.findViewById(R.id.btnIvClose);
 
-                //ImageView ivPreview = (ImageView)nagDialog.findViewById(R.id.first);
-                //ivPreview.setBackground(dd);
-
-                btnClose.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View arg0) {
-
-                        nagDialog.dismiss();
-                    }
-                });*/
                 nagDialog.show();
 
                 Toast.makeText(ctx, photo.getLikes(), Toast.LENGTH_SHORT).show();
@@ -167,7 +185,10 @@ public class PhotosListFiller {
             List<Photo> oldList = adapter.getPhotoList();
             ArrayList newList = new ArrayList();
             newList.addAll(oldList);
+
+            if (photosList!=null)
             newList.addAll(photosList);
+
             System.out.println(newList.size());
             adapter.setPhotoList(newList);
             }
