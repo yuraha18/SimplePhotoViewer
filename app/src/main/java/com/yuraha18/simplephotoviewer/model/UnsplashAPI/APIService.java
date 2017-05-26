@@ -20,6 +20,7 @@ import retrofit2.http.Query;
 
 public interface APIService {
 
+
     @GET(ApiConstants.GET_RANDOM_PHOTO)
     Call<Photo> getRandomPhoto( @Query("access_token") String accessToken);
 

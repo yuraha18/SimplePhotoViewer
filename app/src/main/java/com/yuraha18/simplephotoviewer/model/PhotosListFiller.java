@@ -33,7 +33,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by User on 5/24/2017.
+ * Created by yuraha18 on 5/24/2017.
+ *
+ * this class fill in whole lists
  */
 
 public class PhotosListFiller {
@@ -53,6 +55,7 @@ public class PhotosListFiller {
     public void fillInListView(final String groupBy) {
         listView=(GridView)mainActivity.findViewById(R.id.photoList);
 
+        /* call special method for getting random photo*/
         if (groupBy.equals(ApiConstants.RANDOM_PHOTO))
         {
           getRandomPhoto();
@@ -62,6 +65,7 @@ public class PhotosListFiller {
         additems(groupBy);
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
+            /* this method load new photos if user scroll to the end of list*/
             public void onScrollStateChanged(AbsListView view, int scrollState) {
             }
 
@@ -119,6 +123,8 @@ public class PhotosListFiller {
         });
     }
 
+    /* here we are counting how many images will be fitted in users screen
+    */
     private int countOfImageOnSingleScreen (Context context)
     {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -126,18 +132,20 @@ public class PhotosListFiller {
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         float density  = metrics.density;
-        float dpHeight = metrics.heightPixels / density;
+        float dpHeight = metrics.heightPixels / density;// we get height in pixels thats why must / density and get result in dp
         float dpWidth  = metrics.widthPixels / density;
-        int countImagesWidth = (int) (dpWidth / 106);
-        int countImagesHeigh = (int) (dpHeight/100);
+        int countImagesWidth = (int) (dpWidth / 106);// 106dp its width of image in list
+        int countImagesHeigh = (int) (dpHeight/106);// 106dp its height of image in list
         return countImagesHeigh * countImagesWidth;
     }
 
+    /* add new items when user scroll to the end of list
+    * group_by means: popular, oldest or latest (get this from spinner)*/
     private void additems(String groupBy) {
         final APIService api =  getApi();
 final Context context = mainActivity.getApplicationContext();
         final int countImagesInScreen = countOfImageOnSingleScreen(context);
-       final int countPhotosForLoad = (int) (countImagesInScreen +3);
+       final int countPhotosForLoad = (int) (countImagesInScreen +3);// count how much images we must load
 
         Call<List<Photo>> response =  api.getListPhotos(page, countPhotosForLoad, groupBy, Authorization.getAccessToken(mainActivity));
 
@@ -146,12 +154,15 @@ final Context context = mainActivity.getApplicationContext();
             public void onResponse(Call<List<Photo>> call, Response<List<Photo>> response) {
                 if(response.body()!=null) {
                     int selection = adapter.getPhotoList().size() - countImagesInScreen;
-                    System.out.println(selection);
+                    // add new items to the end of list
                     addNewItemsToAdapter(response.body(), context, mainActivity);
                     listView.setAdapter(adapter);
+                    // listener for clicking on images (makes them bigger)
                     setListener(context, mainActivity);
+                    // update gridview
                     adapter.notifyDataSetChanged();
                     isLoading = false;
+                    //set selection to the end of last list
                     listView.setSelection(selection);
                 }
                 else {
@@ -166,19 +177,15 @@ final Context context = mainActivity.getApplicationContext();
         });
     }
 
+    /* create dialog for showing big image after clicking on listItem*/
     private void setListener(final Context ctx, MainActivity mainActivity) {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Photo photo = (Photo) listView.getAdapter().getItem(position);
-
                 final Dialog nagDialog = new Dialog(ctx,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 nagDialog.setCancelable(false);
-
                 nagDialog.show();
-
-                Toast.makeText(ctx, photo.getLikes(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -188,8 +195,6 @@ final Context context = mainActivity.getApplicationContext();
         if (adapter==null) {
             adapter = new ListViewAdapterForPhotos(ctx, new ArrayList<>(photosList), mainActivity);
         }
-
-
         else {
             List<Photo> oldList = adapter.getPhotoList();
             ArrayList newList = new ArrayList();
@@ -207,9 +212,9 @@ final Context context = mainActivity.getApplicationContext();
 
     private APIService getApi() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ApiConstants.CONNECTION_URL) //Базовая часть адреса
-                .addConverterFactory(GsonConverterFactory.create()) //Конвертер, необходимый для преобразования JSON'а в объекты
+                .baseUrl(ApiConstants.CONNECTION_URL)
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        return retrofit.create(APIService.class); //Создаем объект, при помощи которого будем выполнять запросы
+        return retrofit.create(APIService.class);
     }
 }

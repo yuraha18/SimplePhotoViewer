@@ -3,7 +3,7 @@ package com.yuraha18.simplephotoviewer.model.DTO;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by User on 5/23/2017.
+ * Created by yuraha18 on 5/23/2017.
  */
 
 public class Photo {

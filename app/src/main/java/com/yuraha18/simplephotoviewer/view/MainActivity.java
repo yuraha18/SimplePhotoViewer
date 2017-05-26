@@ -1,17 +1,9 @@
 package com.yuraha18.simplephotoviewer.view;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
+
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.text.util.LinkifyCompat;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,33 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.yuraha18.simplephotoviewer.R;
-import com.yuraha18.simplephotoviewer.model.DTO.AccessToken;
-import com.yuraha18.simplephotoviewer.model.DTO.Photo;
-import com.yuraha18.simplephotoviewer.model.DTO.PostToken;
 import com.yuraha18.simplephotoviewer.model.InternetHelper;
 import com.yuraha18.simplephotoviewer.model.PhotosListFiller;
-import com.yuraha18.simplephotoviewer.model.UnsplashAPI.APIService;
 import com.yuraha18.simplephotoviewer.model.UnsplashAPI.ApiConstants;
-import com.yuraha18.simplephotoviewer.viewmodel.ListViewAdapterForPhotos;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Path;
 
 
 public class MainActivity extends AppCompatActivity
@@ -68,21 +41,29 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        if (InternetHelper.hasActiveInternetConnection(getApplicationContext()))
-            setUpSpinner();
-
-        else {
-            TextView textView = (TextView)findViewById(R.id.exceptionText);
-            textView.setText(R.string.cant_connect_to_server);
-        }
-
+        loadData();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    /* start loading data and caught uncaughted exceptions*/
+    private void loadData() {
+        try {
+            if (InternetHelper.hasActiveInternetConnection(getApplicationContext()))
+                setUpSpinner();
 
+            else {
+                TextView textView = (TextView)findViewById(R.id.exceptionText);
+                textView.setText(R.string.cant_connect_to_server);
+            }
+        }
+        catch (Exception e){
+            Toast.makeText(this, getResources().getString(R.string.unknownException), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /* setup spinner and load data by this choose*/
     private void setUpSpinner() {
-
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -102,11 +83,8 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         } );
-
-
     }
 
     @Override

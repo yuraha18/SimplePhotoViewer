@@ -20,7 +20,9 @@ import retrofit2.Response;
 import static com.yuraha18.simplephotoviewer.model.auth.Authorization.getApi;
 
 /**
- * Created by User on 5/25/2017.
+ * Created by yuraha18 on 5/25/2017.
+ *
+ * this class make likes/unlikes
  */
 
 public class Liker {
@@ -34,7 +36,8 @@ public class Liker {
 
     public boolean sendLike(String photoId, final FullSizePhotoShower fullSizePhotoShower)
     {
-        String accessToken = Authorization.getAccessTokenWithAuth(activity);
+        /* get auth token (if not exist - authorize)*/
+        final String accessToken = Authorization.getAccessTokenWithAuth(activity);
         APIService api  = getApi(ApiConstants.CONNECTION_URL);
 
         final Call<Photo> call = api.likePhoto(photoId, accessToken);
@@ -48,17 +51,20 @@ public class Liker {
 
                         else {
                             result = false;
+                            if (accessToken!=null && !"".equals(accessToken))
                             Toast.makeText(activity, activity.getResources().getString(R.string.request_null_exception), Toast.LENGTH_LONG).show();
 
                         }
 
-                        fullSizePhotoShower.updateViewsAfterLiking();
+                        /* method has liink on called object and call its method for making changes if user make like/unlike
+                        * show it for user by +- countOfLikes in screen and fillIn by color ic_thumb*/
+                        fullSizePhotoShower.updateViewsAfterLiking(result);
                     }
 
                     @Override
                     public void onFailure(Call<Photo> call, Throwable t) {
                         result = false;
-                        fullSizePhotoShower.updateViewsAfterLiking();
+                        fullSizePhotoShower.updateViewsAfterLiking(result);
                         Toast.makeText(activity, activity.getResources().getString(R.string.cant_connect_to_server), Toast.LENGTH_LONG).show();
                     }
                 });
@@ -69,7 +75,8 @@ public class Liker {
 
     public boolean sendUnLike(String photoId, final FullSizePhotoShower fullSizePhotoShower)
     {
-        String accessToken = Authorization.getAccessTokenWithAuth(activity);
+        /* doing the same work like method above*/
+        final String accessToken = Authorization.getAccessTokenWithAuth(activity);
         APIService api  = getApi(ApiConstants.CONNECTION_URL);
         final Call<Photo> call = api.unlikePhoto(photoId, accessToken);
 
@@ -82,16 +89,17 @@ public class Liker {
 
                 else {
                     result = false;
+                    if (accessToken!=null && !"".equals(accessToken))
                     Toast.makeText(activity, activity.getResources().getString(R.string.request_null_exception), Toast.LENGTH_LONG).show();
                 }
 
-                fullSizePhotoShower.updateViewsAfterLiking();
+                fullSizePhotoShower.updateViewsAfterLiking(result);
             }
 
             @Override
             public void onFailure(Call<Photo> call, Throwable t) {
                 result = false;
-                fullSizePhotoShower.updateViewsAfterLiking();
+                fullSizePhotoShower.updateViewsAfterLiking(result);
                 Toast.makeText(activity, activity.getResources().getString(R.string.cant_connect_to_server), Toast.LENGTH_LONG).show();
             }
         });

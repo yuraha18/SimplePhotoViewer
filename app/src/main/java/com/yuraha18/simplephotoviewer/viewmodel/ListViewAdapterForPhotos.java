@@ -2,19 +2,12 @@ package com.yuraha18.simplephotoviewer.viewmodel;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
-import com.squareup.picasso.Callback;
 import com.yuraha18.simplephotoviewer.R;
 import com.yuraha18.simplephotoviewer.model.DTO.Photo;
 import com.yuraha18.simplephotoviewer.model.DownloadImageTask;
@@ -22,19 +15,18 @@ import com.yuraha18.simplephotoviewer.view.FullSizePhotoShower;
 import com.yuraha18.simplephotoviewer.view.MainActivity;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by User on 5/23/2017.
+ * Created by yuraha18 on 5/23/2017.
+ *
+ * custom list view adapter for photos
  */
 
 public class ListViewAdapterForPhotos extends BaseAdapter {
     private ArrayList<Photo> photoList;
     private LayoutInflater inflater;
     private Context ctx;
-    boolean isImageFitToScreen;
-
     ImageView photoView ;
 
     MainActivity mainActivity;
@@ -66,14 +58,13 @@ public class ListViewAdapterForPhotos extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         convertView=inflater.inflate(R.layout.photo_item, null);
         photoView = (ImageView) convertView.findViewById(R.id.photo);
-
         setOnClickListenerForPhotoView(position);
-
         fillInViews(position, convertView);
-
         return convertView;
     }
 
+    /* when user clicks on some photo create dialog shows full photo with possibility like/unlike
+    * and send info about photo to this dialogFragment*/
     private void setOnClickListenerForPhotoView(final int position) {
         final Photo photo = getPhotoList().get(position);
         final String fullUrl = photo.getUrls().getSmall();
@@ -92,31 +83,16 @@ public class ListViewAdapterForPhotos extends BaseAdapter {
                 newFragment.setArguments(args);
                 Intent intent = new Intent();
                 intent.putExtras(args);
-                //  newFragment.setTargetFragment(getFragmentManager()., 1);
                 newFragment.show(mainActivity.getSupportFragmentManager(), "bbb");
-                //newFragment.startActivityForResult(intent, 1);
-
-
-               // newFragment.show(mainActivity.getSupportFragmentManager(), "bbb");
             }
         });
     }
 
+    /* load images */
     private void fillInViews(int position, View convertView) {
         Photo photo = photoList.get(position);
         String photoUrl =  photo.getUrls().getSmall();
         DownloadImageTask.loadImage(ctx, photoUrl, photoView, convertView);
-        //countOfLikes.setText(photo.getLikes());
-
-    }
-
-
-
-
-    public void setNewData(ArrayList<Photo> list)
-    {
-        photoList = list;
-        notifyDataSetChanged();
     }
 
     public List<Photo> getPhotoList() {

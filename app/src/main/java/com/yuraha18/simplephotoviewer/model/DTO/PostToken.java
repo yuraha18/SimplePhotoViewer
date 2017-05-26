@@ -4,7 +4,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by User on 5/24/2017.
+ * Created by yuraha18 on 5/24/2017.
+ * class has code for sending to server and get access_token
  */
 
 public class PostToken {

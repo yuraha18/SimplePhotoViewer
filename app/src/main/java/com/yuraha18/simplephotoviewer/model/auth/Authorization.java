@@ -29,7 +29,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by User on 5/25/2017.
+ * Created by yuraha18 on 5/25/2017.
+ * this class authorize user in Unsplash by opening webview and getting access_token (oauth2)
+ * also there are static class for getting access_token from sharedPreference if user authorized
  */
 
 public class Authorization {
@@ -47,10 +49,14 @@ public class Authorization {
     public void authorize()
     {
          pref = mainActivity.getSharedPreferences(ApiConstants.APP_PREFERENCES, Context.MODE_PRIVATE);
+
+        //create dialog for webView
         auth_dialog = new Dialog(mainActivity);
         auth_dialog.setContentView(R.layout.auth_dialog);
         web = (WebView)auth_dialog.findViewById(R.id.webv);
         web.getSettings().setJavaScriptEnabled(true);
+
+        //getting URL from constants. Warning: client_id and secret must matches
         web.loadUrl(ApiConstants.OAUTH_URL+"?redirect_uri="+ApiConstants.REDIRECT_URI+"&response_type=code&client_id="+ApiConstants.CLIENT_ID+"&scope="+ApiConstants.OAUTH_SCOPE);
         web.setWebViewClient(new WebViewClient() {
             boolean authComplete = false;
@@ -64,9 +70,9 @@ public class Authorization {
                     @Override
                     public void onPageFinished(WebView view, String url) {
                         super.onPageFinished(view, url);
-                        System.out.println(url);
                         String[] urls = url.split(ApiConstants.OAUTH_URL);
 
+                        // if url doesnt have code)
                         if (urls.length<=1)
                             return;
 
@@ -96,7 +102,7 @@ public class Authorization {
                     }
                 });
                 auth_dialog.show();
-                auth_dialog.setTitle("You must authorize for continue");
+                auth_dialog.setTitle(mainActivity.getResources().getString(R.string.authorize));
                 auth_dialog.setCancelable(true);
                 auth_dialog.setCanceledOnTouchOutside(true);
 
@@ -104,9 +110,11 @@ public class Authorization {
             }
 
 
+    /* when user send pass and login, and allow enter we must get access_token*/
     private void getToken() {
         APIService api = getApi(ApiConstants.AUTH_BASIC_URL);
-        System.out.println(authCode);
+
+        //send code we get before
         Call<AccessToken> call = api.getToken(authCode);
         call.enqueue(new Callback<AccessToken>() {
             @Override
@@ -114,19 +122,21 @@ public class Authorization {
                 if (response.body()!=null)
                 {
                     String tokenValue = response.body().getAccessToken();
+
+                    /* save token in sharedpreference for using in future*/
                     SharedPreferences mSettings = mainActivity.getSharedPreferences(ApiConstants.APP_PREFERENCES, Context.MODE_PRIVATE);
                     mSettings.edit().putString(ApiConstants.ACCESS_TOKEN, tokenValue).apply();
                 }
                 else
                 {
-                    //Toast.makeText()
+                    Toast.makeText(mainActivity, mainActivity.getResources().getString(R.string.authorizeException), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<AccessToken> call, Throwable t) {
                 t.printStackTrace();
-                Toast.makeText(mainActivity, ApiConstants.REQUEST_LIMIT_EXCEPTION, Toast.LENGTH_LONG).show();
+                Toast.makeText(mainActivity, mainActivity.getResources().getString(R.string.authorizeException), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -138,12 +148,16 @@ public class Authorization {
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl) //Базовая часть адреса
-                .addConverterFactory(GsonConverterFactory.create(gson)) //Конвертер, необходимый для преобразования JSON'а в объекты
+                .baseUrl(baseUrl) //base url
+                .addConverterFactory(GsonConverterFactory.create(gson)) //converter for converting JSON'а in objects
                 .build();
-        return retrofit.create(APIService.class); //Создаем объект, при помощи которого будем выполнять запросы
+        return retrofit.create(APIService.class);
     }
 
+    /* this method getToken from preferences, if it doesn't exist - call method for authorizing
+    * it using when user wanna send like/unlike. When user getting photos access_token also using, but if it not exist
+    * app doesnt want authorize (use method getAccessToken)
+     * access_token using in whole requests*/
     public static String getAccessTokenWithAuth (Activity activity){
         String accessToken = getAccessToken(activity);
 

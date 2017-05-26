@@ -5,11 +5,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 /**
- * Created by User on 5/25/2017.
+ * Created by yuraha18 on 5/25/2017.
  */
 
 public class InternetHelper {
 
+    /* check internet connection*/
         public static boolean hasActiveInternetConnection(Context context) {
             ConnectivityManager cm =
                     (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);

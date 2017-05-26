@@ -11,17 +11,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.bogdwellers.pinchtozoom.ImageMatrixTouchHandler;
 import com.yuraha18.simplephotoviewer.R;
 import com.yuraha18.simplephotoviewer.model.DTO.Photo;
 import com.yuraha18.simplephotoviewer.model.DownloadImageTask;
@@ -39,13 +32,20 @@ import java.util.List;
  * Use the  factory method to
  * create an instance of this fragment.
  */
+
+/* dialog shows big image
+* whowing likes button and start work of liking/disliking
+* also can save its state thts why after rotating nothing bad gonna happen*/
 public class FullSizePhotoShower extends DialogFragment  {
     TextView authorView;
     TextView countOfLikes;
     ImageButton likeButton;
     boolean isLikedByUser;
-    ImageButton backBtn;
     boolean updateLikesResult;
+    String author;
+    String url;
+    int likes;
+    String photoId;
     ListViewAdapterForPhotos calledObject;
     int posInList;
 
@@ -59,39 +59,46 @@ public class FullSizePhotoShower extends DialogFragment  {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Use the Builder class for convenient dialog construction
-       final Dialog mDialog = new Dialog(getActivity(), R.style.AppTheme);
-       // mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+       final Dialog mDialog = new Dialog(getActivity(), R.style.AppTheme);
+
+        /* set backgroung color and transienty of dialog window*/
         Drawable d = new ColorDrawable(Color.BLACK);
         d.setAlpha(230);
         mDialog.getWindow().setBackgroundDrawable(d);
-
-
         mDialog.setContentView(R.layout.full_screen_image);
-        Bundle args = getArguments();
-        String url = args.getString("url");
 
-String author = args.getString("author");
+        initData(mDialog, savedInstanceState);
+
+        return mDialog;
+    }
+
+    private void initData(Dialog mDialog, Bundle savedInstanceState) {
+        Bundle args;
+        /* if screen was rotated get data from saved bundle*/
+        if (savedInstanceState!=null)
+            args = savedInstanceState;
+
+        // else: get from bundle was send when dialog call
+        else
+            args = getArguments();
+
+        url = args.getString("url");
+        author = args.getString("author");
         isLikedByUser = args.getBoolean("is_liked_by_user", false);
-        String photoId = args.getString("id");
-        int likes = args.getInt("likes");
+        photoId = args.getString("id");
+        likes = args.getInt("likes");
         System.out.println(photoId);
 
         authorView = (TextView) mDialog.findViewById(R.id.author);
         countOfLikes = (TextView) mDialog.findViewById(R.id.countOfLikes);
-
         countOfLikes.setText(likes+"");
         authorView.setText(author);
         likeButton = (ImageButton) mDialog.findViewById(R.id.likeButton);
 
         setLikeButtonColor();
         setOnClickListenerForLikeButton( photoId);
-
         initializeImageView(mDialog, url);
-
-
-        return mDialog;
     }
 
     private void initializeImageView(final Dialog mDialog, String url) {
@@ -121,31 +128,45 @@ String author = args.getString("author");
         DownloadImageTask.loadImage(getContext(), url, imageView, getView());
     }
 
+    /* save instance*/
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("url", url);
+        outState.putString("id", photoId);
+        outState.putInt("likes", likes);
+        outState.getInt("position_in_list", posInList);
+        outState.putBoolean("is_liked_by_user", isLikedByUser);
+        outState.putString("author", author);
+    }
 
+    /* cal Liker methods when user wanna send like/unlike*/
     private void setOnClickListenerForLikeButton(final String photoId) {
 
         likeButton.setOnClickListener(new View.OnClickListener() {
                                           @Override
                                           public void onClick(View v) {
-
+                                              // if user didnt like this photo before - send like
                                               if (!isLikedByUser)
                                                   updateLikesResult = new Liker(getActivity()).sendLike(photoId, FullSizePhotoShower.this);
-
+                                               // else: unlike
                                               else
                                                   updateLikesResult = new Liker(getActivity()).sendUnLike(photoId, FullSizePhotoShower.this);
 
                                           }
                                       });
 
-
-
     }
 
-    public void updateViewsAfterLiking() {
+    /* this method calls outside (by object link) when we get result from server about liking/unliking this photo
+    * if request successfull - change count of likes and button drawable color*/
+    public void updateViewsAfterLiking(boolean result) {
+        if (result) {
             isLikedByUser = !isLikedByUser;
             updateLikesCounter();
             setLikeButtonColor();
-        updateLikesResult = false;
+            updateLikesResult = false;
+        }
     }
 
 
@@ -163,12 +184,14 @@ String author = args.getString("author");
         try {
             int curCount = Integer.parseInt(currentCount);
             int updCount;
+            // if user liked photo +1 to whole count
             if (isLikedByUser)
                 updCount = curCount+1;
 
             else
             updCount = curCount-1;
 
+            likes = updCount;
             countOfLikes.setText(updCount+"");
         }
         catch (Exception e){e.printStackTrace();}

@@ -1,7 +1,8 @@
 package com.yuraha18.simplephotoviewer.model.DTO;
 
 /**
- * Created by User on 5/23/2017.
+ * Created by yuraha18 on 5/23/2017.
+ * class has 2 fields: link on full and small photo. Small uses in list, ful when user open full photo clicked on list
  */
 
 public class PhotoLinks {

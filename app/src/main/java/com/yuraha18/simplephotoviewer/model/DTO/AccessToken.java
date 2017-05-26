@@ -3,7 +3,8 @@ package com.yuraha18.simplephotoviewer.model.DTO;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by User on 5/24/2017.
+ * Created by yuraha18 on 5/24/2017.
+ * dto has access_token for authorizing
  */
 
 public class AccessToken {

@@ -1,7 +1,8 @@
 package com.yuraha18.simplephotoviewer.model.DTO;
 
 /**
- * Created by User on 5/23/2017.
+ * Created by yuraha18 on 5/23/2017.
+ * author username
  */
 
 public class User {
