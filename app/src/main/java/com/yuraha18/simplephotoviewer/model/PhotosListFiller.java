@@ -105,12 +105,16 @@ public class PhotosListFiller {
                     listView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 }
+                else {
+                    Toast.makeText(mainActivity, mainActivity.getResources().getString(R.string.request_null_exception), Toast.LENGTH_LONG).show();
+
+                }
 
             }
 
             @Override
             public void onFailure(Call<Photo> call, Throwable t) {
-                System.out.println("failure");
+                Toast.makeText(mainActivity, mainActivity.getResources().getString(R.string.cant_connect_to_server), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -140,19 +144,24 @@ final Context context = mainActivity.getApplicationContext();
         response.enqueue(new Callback<List<Photo>>() {
             @Override
             public void onResponse(Call<List<Photo>> call, Response<List<Photo>> response) {
-               int selection= adapter.getPhotoList().size()-countImagesInScreen;
-                System.out.println(selection);
-                addNewItemsToAdapter(response.body(), context, mainActivity);
-                listView.setAdapter(adapter);
-                setListener(context, mainActivity);
-                adapter.notifyDataSetChanged();
-                isLoading=false;
-               listView.setSelection(selection);
+                if(response.body()!=null) {
+                    int selection = adapter.getPhotoList().size() - countImagesInScreen;
+                    System.out.println(selection);
+                    addNewItemsToAdapter(response.body(), context, mainActivity);
+                    listView.setAdapter(adapter);
+                    setListener(context, mainActivity);
+                    adapter.notifyDataSetChanged();
+                    isLoading = false;
+                    listView.setSelection(selection);
+                }
+                else {
+                    Toast.makeText(mainActivity, mainActivity.getResources().getString(R.string.request_null_exception), Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
             public void onFailure(Call<List<Photo>> call, Throwable t) {
-                System.out.println("failure");
+                Toast.makeText(context, mainActivity.getResources().getString(R.string.cant_connect_to_server), Toast.LENGTH_LONG).show();
             }
         });
     }

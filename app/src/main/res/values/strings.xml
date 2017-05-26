@@ -16,6 +16,19 @@
         <item>Випадкове фото</item>
     </string-array>
 
-    <string name="cant_connect_to_internet">Немає інтернет зєднання. Без нього робота з додатком не можлива</string>
-    <string name="request_limit_exception">Перевищено ліміт зєднаь з UnsplashAPI для користувача. Зачекайте до кінця години </string>
+    <string name="MainActivity">На головну</string>
+    <string name="readme">Readme</string>
+    <string name="Communicate">Зворотній звязок</string>
+
+    <string name="email">yura.yush@gmail.com</string>
+    <string name="studio">yuraha Studio</string>
+
+
+    <string name="readmeText">Дякую за перегляд додатку. Прохання до працівника TeamVoy, котрий буде оцінювати додаток:
+        якщо у Вас буде час та бажання, то напишіть на yura.yush@gmail.com побажання щодо того як мені покращити
+    додаток та свій код. Дякую.</string>
+
+    <string name="cant_connect_to_server">Не можливо підключитись до сервера. Перевірте зєднання з інтернетом</string>
+    <string name="request_null_exception">Перевищено ліміт зєднань з серверос для користувача. Зачекайте до кінця години </string>
+    <string name="title_activity_info">InfoActivity</string>
 </resources>

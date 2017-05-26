@@ -2,7 +2,9 @@ package com.yuraha18.simplephotoviewer.model;
 
 import android.app.Activity;
 import android.content.Context;
+import android.widget.Toast;
 
+import com.yuraha18.simplephotoviewer.R;
 import com.yuraha18.simplephotoviewer.model.DTO.Photo;
 import com.yuraha18.simplephotoviewer.model.UnsplashAPI.APIService;
 import com.yuraha18.simplephotoviewer.model.UnsplashAPI.ApiConstants;
@@ -44,8 +46,11 @@ public class Liker {
                         if (response.body()!=null)
                             result = true;
 
-                        else
+                        else {
                             result = false;
+                            Toast.makeText(activity, activity.getResources().getString(R.string.request_null_exception), Toast.LENGTH_LONG).show();
+
+                        }
 
                         fullSizePhotoShower.updateViewsAfterLiking();
                     }
@@ -54,6 +59,7 @@ public class Liker {
                     public void onFailure(Call<Photo> call, Throwable t) {
                         result = false;
                         fullSizePhotoShower.updateViewsAfterLiking();
+                        Toast.makeText(activity, activity.getResources().getString(R.string.cant_connect_to_server), Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -74,8 +80,10 @@ public class Liker {
                 if (response.body()!=null)
                     result = true;
 
-                else
+                else {
                     result = false;
+                    Toast.makeText(activity, activity.getResources().getString(R.string.request_null_exception), Toast.LENGTH_LONG).show();
+                }
 
                 fullSizePhotoShower.updateViewsAfterLiking();
             }
@@ -84,6 +92,7 @@ public class Liker {
             public void onFailure(Call<Photo> call, Throwable t) {
                 result = false;
                 fullSizePhotoShower.updateViewsAfterLiking();
+                Toast.makeText(activity, activity.getResources().getString(R.string.cant_connect_to_server), Toast.LENGTH_LONG).show();
             }
         });
 
