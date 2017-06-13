@@ -26,6 +26,4 @@ public class ApiConstants {
     public static final String GROUP_BY_LATEST = "latest";
     public static final String GROUP_BY_POPULAR = "popular";
     public static final String RANDOM_PHOTO = "random";
-
-
 }
